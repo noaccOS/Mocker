@@ -1,0 +1,15 @@
+INSERT INTO Sedi VALUES ('Uiltq', 'BQJT', 'znzlkjsorp', 16, 7607, 'Italia');
+INSERT INTO Sedi VALUES ('Bnso', 'BQJT', 'ikzsmulkmq', 77, 6891, 'Austria');
+INSERT INTO Sedi VALUES ('Orlulo ty', 'BQJT', 'tvaghtoxho', 95, 2465, 'Austria');
+INSERT INTO Sedi VALUES ('Qhogqxxt', 'MCFO', 'cztvzihlfn', 20, 3945, 'Austria');
+INSERT INTO Sedi VALUES ('Vqvvyfz', 'WYYT', 'zokxjdzjkq', 8, 6161, 'Italia');
+INSERT INTO Sedi VALUES ('Xzwdrhdf', 'WYYT', 'euwzqbdlvr', 61, 8499, 'Austria');
+INSERT INTO Sedi VALUES ('Jpwhticziz', 'WYYT', 'zfdudltjgz', 19, 692, 'Italia');
+INSERT INTO Sedi VALUES ('Gsjaheebcg', 'WYYT', 'fdrxyknqoh', 27, 6057, 'Austria');
+INSERT INTO Sedi VALUES ('Vzxa swl', 'BQJT', 'fyuoexdnsu', 24, 9387, 'Austria');
+INSERT INTO Sedi VALUES ('Lju ', 'MCFO', 'scjllzrrol', 54, 2960, 'Austria');
+INSERT INTO Sedi VALUES ('Uvbcgyzohs', 'BQJT', 'frvnyfxncj', 96, 4531, 'Austria');
+INSERT INTO Sedi VALUES ('Uvgyqekc', 'WYYT', 'dsoupuxydz', 100, 5103, 'Italia');
+INSERT INTO Sedi VALUES ('Nhjlv', 'MCFO', 'mnsslsgiyq', 11, 7290, 'Italia');
+INSERT INTO Sedi VALUES ('Dqnapwbr', 'MCFO', NULL, NULL, 2355, 'Austria');
+INSERT INTO Sedi VALUES ('Smxpsnzcnwd', 'WYYT', 'rvzzxfqibi', 27, 3705, 'Italia');

@@ -1,0 +1,10 @@
+INSERT INTO Laboratori VALUES ('F31', 'H');
+INSERT INTO Laboratori VALUES ('F42', 'B');
+INSERT INTO Laboratori VALUES ('B1', 'H');
+INSERT INTO Laboratori VALUES ('D72', 'W');
+INSERT INTO Laboratori VALUES ('D5', 'M');
+INSERT INTO Laboratori VALUES ('E7', 'R');
+INSERT INTO Laboratori VALUES ('C85', 'M');
+INSERT INTO Laboratori VALUES ('G77', 'B');
+INSERT INTO Laboratori VALUES ('F40', 'E');
+INSERT INTO Laboratori VALUES ('D97', 'U');
