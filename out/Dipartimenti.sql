@@ -1,3 +1,3 @@
-INSERT INTO Dipartimenti VALUES ('MCFO', 'rmvrh g');
-INSERT INTO Dipartimenti VALUES ('WYYT', 'ibotkscnkcqpelfldu');
-INSERT INTO Dipartimenti VALUES ('BQJT', 'jbl aq,ovxnhjacseqdy');
+INSERT INTO Dipartimenti VALUES ('MXCY', 'ytbdomjgbridhauetnxtig');
+INSERT INTO Dipartimenti VALUES ('SPOB', 'brfwarm mdx');
+INSERT INTO Dipartimenti VALUES ('YUVK', 'rovk,wtt');

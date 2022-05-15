@@ -3,21 +3,20 @@ import exrex as ex
 import datetime as dt
 import re
 
+# No actual data for names and descriptions, just random strings.
+# Should work good enough for its purpose.
+
 class INT():
     def __init__(self, min: int, max: int, step: int = 1, notnull: bool = False, unique: bool = False, key: bool = False):
         self.min = min
-        self.max = max
+        self.max = max + 1
         self.step = step
         self.notnull = notnull
         self.unique = unique
         self.key = key
 
-    @staticmethod
-    def given(max: int, notnull: bool = False, unique: bool = False, key: bool = False):
-        return INT(0, max, notnull=notnull, unique=unique, key=key)
-
     def gen(self) -> int:
-        return random.randrange(self.min, self.max + 1, self.step)
+        return random.randrange(self.min, self.max, self.step)
 
     def __str__(self):
         return f"{self.gen()}"
@@ -42,10 +41,6 @@ class DATE():
         self.notnull = notnull
         self.unique = unique
         self.key = key
-
-    @staticmethod
-    def given(max: str, notnull: bool = False, unique: bool = False, key: bool = False):
-        return DATE('1970-01-01', max, notnull=notnull, unique=unique, key=key)
 
     def gen(self) -> dt.date:
         return self.min + (self.max - self.min) * random.random()
@@ -90,12 +85,14 @@ class GIORNO():
         return f"'{self.gen()}'"
 
 class Table():
-    def __init__(self, name: str, fields: list, fks: list = [], uniques: list = [], cascadenulls: list = [], debug = False):
+    def __init__(self, name: str, fields: list, fks: list = [], uniques: list = [], cascadenulls: list = [], post_triggers: list = [], pre_triggers: list = [], debug = False):
         self.name = name
         self.fields = fields
         self.fks = fks
         self.uniques = uniques
         self.cascadenulls = cascadenulls
+        self.pre_triggers = pre_triggers
+        self.post_triggers = post_triggers
         self.keys = []
         self.generated = []
         self.debug = debug
@@ -110,7 +107,7 @@ class Table():
                 ref = random.choice(tab.generated)
                 if self.debug: print(f'Searching for suitable FK for {vals}, index {myfields}')
 
-                while not all(f(ref[i]) for i,f in options):
+                while not all(f(ref, vals) for f in options):
                     ref = random.choice(tab.generated)
 
                 if self.debug: print(f'FOUND')
@@ -164,6 +161,14 @@ class Table():
         
         while n > 0:
             new = self.gen()
+
+            # Apply pre triggers
+            for t in self.pre_triggers:
+                new = t(new)
+
+            # A trigger deleted the data
+            if new == None:
+                continue
             
             # Foreign key adjust
             newf = tofks(new)
@@ -186,7 +191,17 @@ class Table():
             if check_compound_uniques(newn):
                 continue
 
-            # The data is ok, store it
+            # The data is ok.
+            
+            # Apply post triggers. Should not edit primary or foreign keys.
+            for t in self.post_triggers:
+                newn = t(newn)
+
+            # A trigger deleted the data
+            if newn == None:
+                continue
+
+            # Store the values
             self.keys.append(newk)
             self.generated.append(newn)
             n -= 1
@@ -209,6 +224,11 @@ class Table():
         tbl.generated = data
         return tbl
         
+# Edits and returns the record. Used in triggers
+def editdata(data: list, index: int, value):
+    data[index] = value
+    return data
+
 
 # Defining tables
 # Studenti
@@ -266,7 +286,8 @@ stanze = Table('Stanze',
                    STR('[A-Z]{4}', key=True),
                    INT(0, 3, notnull=True),
                ],
-               fks=[(edifici, [1,2,3], [0,1,2], [])])
+               # Edificio.piani > stanza.piano
+               fks=[(edifici, [1,2,3], [0,1,2], [lambda edificio, stanza: edificio[3] > stanza[4]])])
 stanze.tofile(1800)
 
 uff = list(filter(lambda x: re.match(r"^\'\d", x[0]), stanze.generated))
@@ -312,12 +333,16 @@ docenti = Table('Docenti',
                     STR(r'[1-9]\d?\d?')
                 ],
                 fks=[(uffici, [7, 6], [0, 1], [])],
-                uniques=[[6,7]])
+                uniques=[[6,7]],
+                post_triggers=[
+                    # If a student with the same CF exists, the name and surname must be the same
+                    lambda doc: doc if (stu := next((s for s in studenti.generated if s[1] == doc[1]), None)) is None else editdata(editdata(doc, 2, stu[2]), 3, stu[3])
+                ])
 docenti.tofile(300)
 
-ric = docenti.generated[:99]
+ric = docenti.generated[:100]
 oras = docenti.generated[100:]
-ordi = oras[:99]
+ordi = oras[:100]
 ass = oras[100:]
 
 # Ricercatori
@@ -365,7 +390,12 @@ personaleamministrativo = Table('PersonaleAmministrativo',
                                     STR(r'[A-G]?[1-7]\d?', notnull=True),
                                     STR(r'[A-Z]{4}', notnull=True)
                                 ],
-                                fks=[(stanze, [7, 8], [0, 3], [])])
+                                fks=[(stanze, [7, 8], [0, 3], [])],
+                                post_triggers=[
+                                    # Same as for docenti, but for both docenti and studenti
+                                    lambda pa: pa if (stu := next((s for s in studenti.generated if s[1] == pa[1]), None)) is None else editdata(editdata(pa, 2, stu[2]), 3, stu[3]),
+                                    lambda pa: pa if (doc := next((d for d in docenti .generated if d[1] == pa[1]), None)) is None else editdata(editdata(pa, 2, doc[2]), 3, doc[3])
+                                ])
 personaleamministrativo.tofile(150)
 
 # Corsi
@@ -378,6 +408,11 @@ corsi = Table('Corsi',
               ])
 corsi.tofile(20)
 
+# Helper function for edizioni corsi trigger
+def toints(lst: list):
+    return [1 if x == 'true' else 0 for x in lst]
+
+# Edizioni Corsi
 edizionicorsi = Table('EdizioniCorsi',
                       [
                           STR(r'[A-Z\-]{5,8}', key=True),
@@ -387,9 +422,12 @@ edizionicorsi = Table('EdizioniCorsi',
                           BOOL(notnull=True),
                           INT(1, 4, notnull=True)
                       ],
-                      fks=[(corsi, [0], [0], [])])
+                      fks=[(corsi, [0], [0], [ lambda corso, edizione: corso[3] == str(sum(toints(edizione[2:5])))])],
+                      # if all Qn are false, change one of them to true
+                      pre_triggers=[(lambda ed: ed if ed[2] == 'true' or ed[3] == 'true' or ed[4] == 'true' else editdata(ed, random.randint(2,4), 'true'))])
 edizionicorsi.tofile(150)
 
+# Lezioni
 lezioni = Table('Lezioni',
                 [
                     STR(r'[A-Z\-]{5,8}', key=True),
