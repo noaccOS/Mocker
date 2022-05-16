@@ -97,7 +97,7 @@ class Table():
         self.generated = []
         self._debug = debug
 
-    def gen_n(self, n: int):
+    def gen_n(self, n: int, _existing_data = [], _data_assign = {}):
         def tokeys(dic):
             z = list(filter(lambda x: x[0].key, dic))
             return [v[1] for v in z]
@@ -161,7 +161,7 @@ class Table():
         
         while n > 0:
             new = self.gen()
-
+            
             # Apply pre triggers
             for t in self.pre_triggers:
                 new = t(new)
@@ -172,6 +172,13 @@ class Table():
             
             # Foreign key adjust
             newf = tofks(new)
+            
+            # Nullable checks
+            newn = tonullables(list(zip(self.fields, newf)))
+
+            # Use existing data, if any
+            for k,v in _data_assign.items():
+                new[k] = _existing_data[n - 1][v]
 
             # Check primary key
             newk = tokeys(list(zip(self.fields, newf)))
@@ -181,9 +188,6 @@ class Table():
                 if self._debug: print('KEY ALREADY PRESENT')
                 continue
             
-            # Nullable checks
-            newn = tonullables(list(zip(self.fields, newf)))
-
             # If a unique field/set of fields already exists,
             #   discard the generated values
             if check_single_uniques(newn):
@@ -219,15 +223,11 @@ class Table():
             f.write(str(self))
 
     @staticmethod
-    def fromData(name, fields, data, assign):
-        tbl = Table(name, fields)
+    def fromData(name, fields, data, assign, fks: list = [], uniques: list = [], cascadenulls: list = [], post_triggers: list = [], pre_triggers: list = [], debug = False):
+        tbl = Table(name, fields, fks=fks, uniques=uniques, cascadenulls=cascadenulls, post_triggers=post_triggers, pre_triggers=pre_triggers, debug=debug)
 
-        columns = set(assign.keys())
-        all_columns = set(range(len(fields)))
-        missing = all_columns - columns
+        tbl.gen_n(len(data), data, assign)
         
-        gen = [[str(f) if i in missing else record[assign[i]] for i,f in enumerate(fields)] for record in data]
-        tbl.generated = gen
         return tbl
         
 # Edits and returns the record. Used in triggers

@@ -1,3 +1,3 @@
-INSERT INTO Dipartimenti VALUES ('ONIR', 'sogjawh,ezbbwwpxnilv,gj');
-INSERT INTO Dipartimenti VALUES ('SWVY', 'bouihkpywxenqtfut');
-INSERT INTO Dipartimenti VALUES ('FSMA', 'oudjpraoymqvmulo');
+INSERT INTO Dipartimenti VALUES ('VYTN', 'bn,kvjmgh');
+INSERT INTO Dipartimenti VALUES ('UPMU', 'ebojajwgpdqif,fkcnm');
+INSERT INTO Dipartimenti VALUES ('ASRF', 'tnine');

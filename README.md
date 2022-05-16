@@ -163,7 +163,7 @@ edizionicorsi.tofile(150)
 ```
 #### Table from already generated data
 Sometimes it's useful to generate a table from data already available, like in case of specializations. An additional parameter is needed for the assignment. It's a dictionary of self index to remote index
-> Note: for now, only simple completion is allowed for new generated fields (like Aule's third field in the example)
+
 Example:
 ```python
 stanze = Table('Stanze',

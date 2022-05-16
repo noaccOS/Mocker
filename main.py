@@ -1,5 +1,6 @@
 import random
 import re
+from itertools import chain
 
 from mock import INT, STR, DATE, BOOL, GIORNO, VOTO, Table, editdata
 
@@ -140,22 +141,22 @@ ordass = Table.fromData('OrdAss',
 ordass.tofile(-1)
 
 # Ordinario
-ordinario = Table.fromData('Ordinario',
-                           [
-                               INT(1, 5000, key=True),
-                           ],
-                           ordi,
-                           { 0: 0 })
-ordinario.tofile(-1)
+ordinari = Table.fromData('Ordinari',
+                          [
+                              INT(1, 5000, key=True),
+                          ],
+                          ordi,
+                          { 0: 0 })
+ordinari.tofile(-1)
 
 # Associato
-associato = Table.fromData('Associato',
+associati = Table.fromData('Associati',
                            [
                                INT(1, 5000, key=True),
                            ],
                            ass,
                            { 0: 0 })
-associato.tofile(-1)
+associati.tofile(-1)
 
 # Personale Amministrativo
 personaleamministrativo = Table('PersonaleAmministrativo',
@@ -197,29 +198,40 @@ edizionicorsi = Table('EdizioniCorsi',
                       [
                           STR(r'[A-Z\-]{5,8}', key=True),
                           INT(2011, 2022, key=True),
+                          INT(1, 5000),
+                          INT(1, 5000),
                           BOOL(notnull=True),
                           BOOL(notnull=True),
                           BOOL(notnull=True),
                           INT(1, 4, notnull=True)
                       ],
-                      fks=[(corsi, [0], [0], [ lambda corso, edizione: corso[3] == str(sum(toints(edizione[2:5])))])],
+                      fks=[
+                          (ordass, [2], [0], []),
+                          (ricercatori, [3], [0], []),
+                          (corsi, [0], [0], [ lambda corso, edizione: corso[3] == str(sum(toints(edizione[4:7])))])
+                      ],
                       # if all Qn are false, change one of them to true
-                      pre_triggers=[(lambda ed: ed if ed[2] == 'true' or ed[3] == 'true' or ed[4] == 'true' else editdata(ed, random.randint(2,4), 'true'))])
+                      pre_triggers=[(lambda ed: ed if ed[4] == 'true' or ed[5] == 'true' or ed[6] == 'true' else editdata(ed, random.randint(4,6), 'true'))])
 edizionicorsi.tofile(150)
 
+lez = [[[c,a]] * int(i) for [c,a,_,_,_,_,_,i] in edizionicorsi.generated]
+lez = list(chain.from_iterable(lez))
+
 # Lezioni
-lezioni = Table('Lezioni',
-                [
-                    STR(r'[A-Z\-]{5,8}', key=True),
-                    INT(2011, 2022, key=True),
-                    GIORNO(key=True),
-                    STR(r'(0[89]|1[0-7]):(00|30)', key=True),
-                    STR(r'[A-G]?[1-7]\d?', notnull=True),
-                    STR(r'[A-Z]{4}', notnull=True),
-                    INT(60, 180, step=30, notnull=True)
-                ],
-                fks=[(edizionicorsi, [0,1], [0,1], []), (aule, [4,5], [0, 1], [])])
-lezioni.tofile(375)
+lezioni = Table.fromData('Lezioni',
+                         [
+                             STR(r'[A-Z\-]{5,8}', key=True),
+                             INT(2011, 2022, key=True),
+                             GIORNO(key=True),
+                             STR(r'(0[89]|1[0-7]):(00|30)', key=True),
+                             STR(r'[A-G]?[1-7]\d?', notnull=True),
+                             STR(r'[A-Z]{4}', notnull=True),
+                             INT(60, 180, step=30, notnull=True)
+                         ],
+                         lez,
+                         { 0: 0, 1: 1 },
+                         fks=[(edizionicorsi, [0,1], [0,1], []), (aule, [4,5], [0, 1], [])])
+lezioni.tofile(-1)
 
 esami = Table('Esami',
               [
