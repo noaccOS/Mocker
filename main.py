@@ -53,7 +53,7 @@ edifici.tofile(37)
 # Stanze
 stanze = Table('Stanze',
                [
-                   STR(r'[A-G]?[1-9]\d?|[1-9]\d?\d?', key=True),
+                   STR(r'[A-Z]?[1-9]\d?|[1-9]\d?\d?', key=True),
                    STR('[A-Z]'),
                    STR('[A-Z][a-z ]{3,10}'),
                    STR('[A-Z]{4}', key=True),
@@ -64,7 +64,7 @@ stanze = Table('Stanze',
 stanze.tofile(1800)
 
 uff = list(filter(lambda x: re.match(r"^\'\d", x[0]), stanze.generated))
-au  = list(filter(lambda x: re.match(r"^\'\D", x[0]), stanze.generated))
+au  = list(filter(lambda x: re.match(r"^\'[A-G]", x[0]), stanze.generated))
 
 # Uffici
 uffici = Table.fromData('Uffici',
@@ -94,7 +94,7 @@ laboratori = Table('Laboratori',
                        STR('[A-Z]{4}', key=True)
                    ],
                    fks=[(aule, [0, 1], [0, 1], [])])
-laboratori.tofile(10)
+laboratori.tofile(len(aule.generated)/20)
 
 # Docenti
 docenti = Table('Docenti',
