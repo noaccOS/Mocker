@@ -178,10 +178,10 @@ class Table():
 
             # Use existing data, if any
             for k,v in _data_assign.items():
-                new[k] = _existing_data[n - 1][v]
+                newn[k] = _existing_data[n - 1][v]
 
             # Check primary key
-            newk = tokeys(list(zip(self.fields, newf)))
+            newk = tokeys(list(zip(self.fields, newn)))
 
             # If the key is already present, try again
             if newk in self.keys:
