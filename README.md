@@ -7,6 +7,8 @@ Allowed constraints definition
 - Unique constraints
 - Triggers
 
+> **Warning**: this is alpha quality software at best. It's not efficient (just tries to generate random data... even when there is no data that can satisfy the conditions) and it's easy to define the structure in a way that generates infinite loops
+
 ## Data definition
 As of now, Mocker supports numbers (only integers), strings, booleans, dates and a couple custom enums I made for my project (marks and days). All the data definition is index-based, the code has no knowledge whatsoever of the field names.
 
