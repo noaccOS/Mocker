@@ -95,7 +95,7 @@ class Table():
         self.post_triggers = post_triggers
         self.keys = []
         self.generated = []
-        self.debug = debug
+        self._debug = debug
 
     def gen_n(self, n: int):
         def tokeys(dic):
@@ -105,12 +105,12 @@ class Table():
             newf = vals
             for (tab, myfields, foreignfields, options) in self.fks:
                 ref = random.choice(tab.generated)
-                if self.debug: print(f'Searching for suitable FK for {vals}, index {myfields}')
+                if self._debug: print(f'Searching for suitable FK for {vals}, index {myfields}')
 
                 while not all(f(ref, vals) for f in options):
                     ref = random.choice(tab.generated)
 
-                if self.debug: print(f'FOUND')
+                if self._debug: print(f'FOUND')
                     
                 for i, j in zip(myfields, foreignfields):
                     newf[i] = ref[j]
@@ -127,7 +127,7 @@ class Table():
             done = []
             while groups:
                 g = groups.pop()
-                if self.debug: print(f'BEGIN NULL SET ON {g}')
+                if self._debug: print(f'BEGIN NULL SET ON {g}')
 
                 if g in done:
                     continue
@@ -138,7 +138,7 @@ class Table():
                     vals[i] = "NULL"
                     groups += [group for group in self.cascadenulls if i in group]
                     
-                if self.debug: print(f'END NULL SET ON {g}')
+                if self._debug: print(f'END NULL SET ON {g}')
 
             return vals
         def check_single_uniques(newn) -> bool:
@@ -147,7 +147,7 @@ class Table():
                     continue
                 l = [x[i] for x in self.generated]
                 if v != "NULL" and v in l:
-                    if self.debug: print(f'UNIQUE FAILED FOR {i}: {v}')
+                    if self._debug: print(f'UNIQUE FAILED FOR {i}: {v}')
                     return True
             return False
         def check_compound_uniques(newn) -> bool:
@@ -155,7 +155,7 @@ class Table():
                 l = [newn[i] for i in u]
                 saved = [[x[i] for i in u] for x in self.generated]
                 if all(x != "NULL" for x in l) and l in saved:
-                    if self.debug: print(f'UNIQUE FAILED FOR {u}: {l}')
+                    if self._debug: print(f'UNIQUE FAILED FOR {u}: {l}')
                     return True
             return False
         
@@ -178,7 +178,7 @@ class Table():
 
             # If the key is already present, try again
             if newk in self.keys:
-                if self.debug: print('KEY ALREADY PRESENT')
+                if self._debug: print('KEY ALREADY PRESENT')
                 continue
             
             # Nullable checks
@@ -219,9 +219,15 @@ class Table():
             f.write(str(self))
 
     @staticmethod
-    def fromData(name, fields, data):
+    def fromData(name, fields, data, assign):
         tbl = Table(name, fields)
-        tbl.generated = data
+
+        columns = set(assign.keys())
+        all_columns = set(range(len(fields)))
+        missing = all_columns - columns
+        
+        gen = [[str(f) if i in missing else record[assign[i]] for i,f in enumerate(fields)] for record in data]
+        tbl.generated = gen
         return tbl
         
 # Edits and returns the record. Used in triggers

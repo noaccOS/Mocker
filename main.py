@@ -72,16 +72,19 @@ uffici = Table.fromData('Uffici',
                             STR(r'[1-7]\d?', key=True),
                             STR('[A-Z]{4}', key=True),
                         ],
-                        uff)
+                        uff,
+                        { 0: 0, 1: 3 })
 uffici.tofile(-1)
 
+# Aule
 aule = Table.fromData('Aule',
-                     [
-                         STR(r'[A-G][1-7]\d?', key=True),
-                         STR('[A-Z]{4}', key=True),
-                         INT(30, 500)
-                     ],
-                      au)
+                      [
+                          STR(r'[A-G][1-7]\d?', key=True),
+                          STR('[A-Z]{4}', key=True),
+                          INT(30, 500)
+                      ],
+                      au,
+                      { 0: 0, 1: 3 })
 aule.tofile(-1)
 
 # Laboratori
@@ -123,7 +126,8 @@ ricercatori = Table.fromData('Ricercatori',
                              [
                                  INT(1, 5000, key=True),
                              ],
-                             ric)
+                             ric,
+                             { 0: 0 })
 ricercatori.tofile(-1)
 
 # OrdAss
@@ -131,7 +135,8 @@ ordass = Table.fromData('OrdAss',
                         [
                             INT(1, 5000, key=True),
                         ],
-                        oras)
+                        oras,
+                        { 0: 0 })
 ordass.tofile(-1)
 
 # Ordinario
@@ -139,7 +144,8 @@ ordinario = Table.fromData('Ordinario',
                            [
                                INT(1, 5000, key=True),
                            ],
-                           ordi)
+                           ordi,
+                           { 0: 0 })
 ordinario.tofile(-1)
 
 # Associato
@@ -147,7 +153,8 @@ associato = Table.fromData('Associato',
                            [
                                INT(1, 5000, key=True),
                            ],
-                           ass)
+                           ass,
+                           { 0: 0 })
 associato.tofile(-1)
 
 # Personale Amministrativo
