@@ -94,7 +94,7 @@ class PERSON_NAME():
     def gen(self) -> str:
         if not self._cache:
             with open('in/names', 'r') as f:
-                self._cache = list(map(lambda l: l[:-1], f.readlines()))
+                self._cache = list(map(lambda l: l[:-1].replace("'", r"''"), f.readlines()))
         return random.choice(self._cache)
 
     def __str__(self):
@@ -110,7 +110,7 @@ class PERSON_SURNAME():
     def gen(self) -> str:
         if not self._cache:
             with open('in/surnames', 'r') as f:
-                self._cache = list(map(lambda l: l[:-1], f.readlines()))
+                self._cache = list(map(lambda l: l[:-1].replace("'", r"''"), f.readlines()))
         return random.choice(self._cache)
 
     def __str__(self):
