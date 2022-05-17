@@ -2,20 +2,35 @@ import random
 import re
 from itertools import chain
 
-from mock import INT, STR, DATE, BOOL, GIORNO, VOTO, Table, editdata
+from mock import INT, STR, DATE, BOOL, GIORNO, VOTO, PERSON_NAME, PERSON_SURNAME, Table, editdata
 
 # Defining tables
+
+# Helper function for studenti trigger
+def realistic_join_date(student):
+    immatricolazione = int(student[6])
+    birthdate_str = student[5]
+    birthyear_str = birthdate_str[1:5]
+    birth_year = int(birthyear_str)
+
+    if immatricolazione < birth_year + 18:
+        immatricolazione = random.randint(birth_year + 18, 2022)
+        student[6] = str(immatricolazione)
+
+    return student
+
 # Studenti
 studenti = Table('Studenti',
                  [
                      INT(1,100000, key=True),
                      STR(r'[A-Z]{6}\d{2}(([ACELMRT](([04][1-9])|([1256][0-9])|([37][01])))|([DHPS](([04][1-9])|([1256][0-9])|([37]0)))|(B(([04][1-9])|([1256][0-9]))))[A-Z]\d{3}[A-Z]', notnull=True, unique=True),
-                     STR(r'[A-Z][a-z]{1,9}', notnull=True),
-                     STR(r'[A-Z][a-z]{1,9}', notnull=True),
+                     PERSON_NAME(notnull=True),
+                     PERSON_SURNAME(notnull=True),
                      STR(r'[a-z]{6,10}@[a-z]{5,10}\.[a-z]{2,5}', unique=True),
                      DATE('1980-01-01', '2003-02-02', notnull=True),
                      INT(2000, 2022, notnull=True)
-                 ])
+                 ],
+                 post_triggers=[realistic_join_date])
 studenti.tofile(1000)
 
 # Dipartimenti
@@ -102,8 +117,8 @@ docenti = Table('Docenti',
                 [
                     INT(1, 5000, key=True),
                     STR(r'[A-Z]{6}\d{2}(([ACELMRT](([04][1-9])|([1256][0-9])|([37][01])))|([DHPS](([04][1-9])|([1256][0-9])|([37]0)))|(B(([04][1-9])|([1256][0-9]))))[A-Z]\d{3}[A-Z]', notnull=True, unique=True),
-                    STR(r'[A-Z][a-z]{1,9}', notnull=True),
-                    STR(r'[A-Z][a-z]{1,9}', notnull=True),
+                    PERSON_NAME(notnull=True),
+                    PERSON_SURNAME(notnull=True),
                     STR(r'[a-z]{6,10}@[a-z]{5,10}\.[a-z]{2,5}', unique=True, notnull=True),
                     STR(r'\d{8,10}', unique=True, notnull=True),
                     STR(r'[A-Z]{4}', notnull=True),
@@ -163,8 +178,8 @@ personaleamministrativo = Table('PersonaleAmministrativo',
                                 [
                                     INT(1, 5000, key=True),
                                     STR(r'[A-Z]{6}\d{2}(([ACELMRT](([04][1-9])|([1256][0-9])|([37][01])))|([DHPS](([04][1-9])|([1256][0-9])|([37]0)))|(B(([04][1-9])|([1256][0-9]))))[A-Z]\d{3}[A-Z]', notnull=True, unique=True),
-                                    STR(r'[A-Z][a-z]{1,9}', notnull=True),
-                                    STR(r'[A-Z][a-z]{1,9}', notnull=True),
+                                    PERSON_NAME(notnull=True),
+                                    PERSON_SURNAME(notnull=True),
                                     STR(r'[a-z]{6,10}@[a-z]{5,10}\.[a-z]{2,5}', unique=True, notnull=True),
                                     STR(r'\d{8,10}', unique=True, notnull=True),
                                     STR(r'segretario|tecnico|[a-z]{5,10}', notnull=True),

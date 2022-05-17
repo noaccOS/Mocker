@@ -1,7 +1,6 @@
 import random
 import exrex as ex
 import datetime as dt
-import re
 
 # No actual data for names and descriptions, just random strings.
 # Should work good enough for its purpose.
@@ -84,6 +83,39 @@ class GIORNO():
     def __str__(self):
         return f"'{self.gen()}'"
 
+
+class PERSON_NAME():
+    def __init__(self, notnull: bool = False, unique: bool = False, key: bool = False):
+        self.notnull = notnull
+        self.unique = unique
+        self.key = key
+        self._cache = None
+        
+    def gen(self) -> str:
+        if not self._cache:
+            with open('in/names', 'r') as f:
+                self._cache = list(map(lambda l: l[:-1], f.readlines()))
+        return random.choice(self._cache)
+
+    def __str__(self):
+        return f"'{self.gen()}'"
+
+class PERSON_SURNAME():
+    def __init__(self, notnull: bool = False, unique: bool = False, key: bool = False):
+        self.notnull = notnull
+        self.unique = unique
+        self.key = key
+        self._cache = None
+        
+    def gen(self) -> str:
+        if not self._cache:
+            with open('in/surnames', 'r') as f:
+                self._cache = list(map(lambda l: l[:-1], f.readlines()))
+        return random.choice(self._cache)
+
+    def __str__(self):
+        return f"'{self.gen()}'"
+    
 class Table():
     def __init__(self, name: str, fields: list, fks: list = [], uniques: list = [], cascadenulls: list = [], post_triggers: list = [], pre_triggers: list = [], debug = False):
         self.name = name
