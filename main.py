@@ -132,10 +132,12 @@ docenti = Table('Docenti',
                 ])
 docenti.tofile(300)
 
-ric = docenti.generated[:100]
-oras = docenti.generated[100:]
-ordi = oras[:100]
-ass = oras[100:]
+nric = random.randint(50,200)
+ric = docenti.generated[:nric]
+oras = docenti.generated[nric:]
+nordi = random.randint(50, (300 - nric)//3*2)
+ordi = oras[:nordi]
+ass = oras[nordi:]
 
 # Ricercatori
 ricercatori = Table.fromData('Ricercatori',
